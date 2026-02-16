@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>HEIYEY STORE — PRO MAX</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#4facfe,#ffffff);
+}
+
+/* Banner */
+.banner{
+  background:linear-gradient(90deg,#0077ff,#4facfe);
+  padding:35px;
+  text-align:center;
+  color:white;
+  font-size:32px;
+  font-weight:bold;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+/* Container */
+.container{
+  max-width:460px;
+  margin:30px auto;
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.2);
+}
+
+/* Inputs */
+select,input{
+  width:100%;
+  padding:13px;
+  margin-top:12px;
+  border-radius:12px;
+  border:2px solid #4facfe;
+  font-size:15px;
+}
+
+/* Button */
+button{
+  margin-top:15px;
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:15px;
+  background:#0077ff;
+  color:white;
+  font-size:17px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:hover{
+  background:#0056cc;
+  transform:scale(1.05);
+}
+
+/* Avatar */
+#avatar{
+  display:none;
+  margin:15px auto;
+  width:130px;
+  border-radius:15px;
+}
+
+/* Loading */
+.loading{
+  display:none;
+  text-align:center;
+  margin-top:10px;
+  color:#0077ff;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="banner">🔵 HEIYEY STORE — PRO MAX</div>
+
+<div class="container">
+
+<!-- Produk -->
+<select id="produk">
+<option value="">Pilih Produk</option>
+<option value="robux">Robux 5-7 Hari</option>
+<option value="brook">Gamepass Brookhaven</option>
+<option value="mm2">Sword MM2</option>
+<option value="stk">Sword STK</option>
+</select>
+
+<!-- Paket -->
+<select id="paket">
+<option value="">Pilih Paket</option>
+</select>
+
+<!-- Username -->
+<input id="user" placeholder="Username Roblox">
+
+<!-- Pembayaran -->
+<select id="pay">
+<option value="">Pembayaran</option>
+<option>Dana</option>
+<option>GoPay</option>
+<option>BCA</option>
+</select>
+
+<button onclick="cekUser()">Cek Username</button>
+
+<div class="loading" id="loading">🔄 Mencari avatar...</div>
+<img id="avatar">
+
+<button onclick="beli()">BELI SEKARANG</button>
+
+</div>
+
+<!-- 🔊 Sound klik -->
+<audio id="klik" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
+<script>
+const paketSelect = document.getElementById("paket");
+
+document.getElementById("produk").onchange = function(){
+
+  paketSelect.innerHTML = "";
+
+  const val = this.value;
+
+  if(val==="robux"){
+    paketSelect.innerHTML = `
+    <option>100 Robux</option>
+    <option>200 Robux</option>
+    <option>300 Robux</option>
+    <option>500 Robux</option>
+    <option>1000 Robux</option>`;
+  }
+
+  if(val==="brook"){
+    paketSelect.innerHTML = `
+    <option>Penthouse 25K</option>
+    <option>Music 30K</option>
+    <option>Speed 30K</option>
+    <option>Premium 50K</option>
+    <option>Vehicle 110K</option>
+    <option>VIP 140K</option>`;
+  }
+
+  if(val==="mm2"){
+    paketSelect.innerHTML = `
+    <option>Darkbringer 20K</option>
+    <option>Lightbringer 40K</option>
+    <option>Chroma Laser 17K</option>
+    <option>Chroma Seer 29K</option>
+    <option>Virtual 10K</option>`;
+  }
+
+  if(val==="stk"){
+    paketSelect.innerHTML = `
+    <option>Astral 8K</option>
+    <option>Bunnybane 8K</option>
+    <option>Amber Riptar 10K</option>
+    <option>Cactus 40K</option>
+    <option>Wand of the Void 40K</option>
+    <option>The Butcher's Cleaver 49K</option>
+    <option>Grimsley's Buster 45K</option>
+    <option>Noctis Aeterna 95K</option>`;
+  }
+}
+
+async function cekUser(){
+
+  document.getElementById("klik").play();
+
+  const username = document.getElementById("user").value;
+  const avatar = document.getElementById("avatar");
+  const loading = document.getElementById("loading");
+
+  if(username.trim()===""){
+    alert("Isi username dulu 😡");
+    return;
+  }
+
+  loading.style.display="block";
+
+  const res = await fetch("https://users.roblox.com/v1/usernames/users",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({usernames:[username]})
+  });
+
+  const data = await res.json();
+
+  if(!data.data.length){
+    alert("Username tidak ditemukan");
+    loading.style.display="none";
+    return;
+  }
+
+  const userId = data.data[0].id;
+
+  const thumb = await fetch(
+    `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png`
+  );
+
+  const thumbData = await thumb.json();
+
+  avatar.src = thumbData.data[0].imageUrl;
+  avatar.style.display="block";
+  loading.style.display="none";
+}
+
+function beli(){
+
+  document.getElementById("klik").play();
+
+  const produk = document.getElementById("produk").value;
+  const paket = document.getElementById("paket").value;
+  const user = document.getElementById("user").value;
+  const pay = document.getElementById("pay").value;
+
+  if(!produk || !paket || !user || !pay){
+    alert("Lengkapi semua 😡");
+    return;
+  }
+
+  const pesan =
+`Halo saya mau beli
+Produk: ${produk}
+Paket: ${paket}
+Username: ${user}
+Pembayaran: ${pay}`;
+
+  window.open(
+    "https://wa.me/6287897493566?text="+encodeURIComponent(pesan),
+    "_blank"
+  );
+}
+</script>
+
+</body>
+</html>
